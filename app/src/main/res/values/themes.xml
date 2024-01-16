@@ -1,0 +1,25 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.NOTE_PROJECT" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/color1</item>
+        <item name="colorPrimaryVariant">@color/color1</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/color5</item>
+        <item name="colorSecondaryVariant">@color/color5</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:statusBarColor" tools:targetapi='l'>@color/design_default_color_primary_variant</item>
+    </style>
+
+    <style name="Base.Theme.NOTE_PROJECT.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/color1</item>
+        <item name="colorPrimaryVariant">@color/color1</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/color5</item>
+        <item name="colorSecondaryVariant">@color/color5</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:statusBarColor" tools:targetapi='l'>@color/design_default_color_primary_variant</item>
+
+    </style>
+
+    <style name="Theme.NOTE_PROJECT" parent="Base.Theme.NOTE_PROJECT" />
+</resources>
