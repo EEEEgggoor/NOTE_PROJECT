@@ -17,7 +17,6 @@ public class Notes implements Serializable {
 
 
 
-
     @ColumnInfo(name = "title")
     String title = "";
 
@@ -39,7 +38,6 @@ public class Notes implements Serializable {
     public void setID(int ID) {
         this.ID = ID;
     }
-
 
 
     public String getTitle() {

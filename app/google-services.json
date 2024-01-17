@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "114089923430",
+    "firebase_url": "https://noteproject-c3cf7-default-rtdb.firebaseio.com",
+    "project_id": "noteproject-c3cf7",
+    "storage_bucket": "noteproject-c3cf7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:114089923430:android:6b574d0033bb7808c2eea7",
+        "android_client_info": {
+          "package_name": "com.glv.note_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNh-YJZLXSOTRb125TCGuaX2O0O4JFJb4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
