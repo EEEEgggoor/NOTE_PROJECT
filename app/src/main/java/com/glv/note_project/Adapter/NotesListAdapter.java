@@ -50,14 +50,7 @@ public class NotesListAdapter extends RecyclerView.Adapter <NotesViewHolder>{
         holder.textView_date.setText(list.get(position).getData());
         holder.textView_date.setSelected(true);
 
-        if (list.get(position).isPinned()){
-            holder.imageView_pin.setImageResource(R.drawable.check_box1);
-        }
-        else{
-            holder.imageView_pin.setImageResource(0);
-        }
-//            int color_code = getrandomColor();
-//            holder.notes_container.setCardBackgroundColor(holder.itemView.getResources().getColor(color_code, null));
+
 
         holder.notes_container.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,18 +69,6 @@ public class NotesListAdapter extends RecyclerView.Adapter <NotesViewHolder>{
 
     }
 
-//        private int getrandomColor(){
-//            List<Integer> colorCode = new ArrayList<>();
-//            colorCode.add(R.color.color);
-//            colorCode.add(R.color.color1);
-//            colorCode.add(R.color.color2);
-//            colorCode.add(R.color.color3);
-//            colorCode.add(R.color.color4);
-//            colorCode.add(R.color.color5);
-//            Random random = new Random();
-//            int random_color = random.nextInt(colorCode.size());
-//            return colorCode.get(random_color);
-//        }
 
     @Override
     public int getItemCount() {

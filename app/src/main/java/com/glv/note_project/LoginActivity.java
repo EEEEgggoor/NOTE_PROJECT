@@ -22,14 +22,16 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginActivity extends AppCompatActivity {
     private TextView your_name_text;
     private EditText login, pass;
-    private Button logIN, sigIN, main_act_btn, singOut;
+    private Button logIN, main_act_btn, singOut;
     private FirebaseAuth mAuth;
+    private Button sigIN;
     private String requesrQode;
+    private int Logsost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Logsost = 0;
         setContentView(R.layout.activity_login);
         login = findViewById(R.id.login);
         pass = findViewById(R.id.pass);
@@ -40,10 +42,8 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         logIN = findViewById(R.id.logIN);
     }
-    public void onClickSignUp(View view){
+    public void onClickLoginUp(View view){
         if(!TextUtils.isEmpty(login.getText().toString()) && !TextUtils.isEmpty(pass.getText().toString())) {
-
-
             mAuth.createUserWithEmailAndPassword(login.getText().toString(), pass.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -51,7 +51,6 @@ public class LoginActivity extends AppCompatActivity {
                         FirebaseUser cUser = mAuth.getCurrentUser();
                         if (cUser!=null){
                             Signed();
-
                             String userName = "Вы вошли как:" + cUser.getEmail();
                             your_name_text.setText(userName);
                         }
@@ -72,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickLogIn(View view){
+    public void onClickSigIn(View view){
         if(!TextUtils.isEmpty(login.getText().toString()) && !TextUtils.isEmpty(pass.getText().toString())) {
             mAuth.signInWithEmailAndPassword(login.getText().toString(), pass.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
@@ -80,13 +79,13 @@ public class LoginActivity extends AppCompatActivity {
                     if(task.isSuccessful()){
                         Signed();
 
-                        Toast.makeText(getApplicationContext(), "Log", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Вы вошли успешно", Toast.LENGTH_SHORT).show();
 
 
                     }
                     else{
 
-                        Toast.makeText(getApplicationContext(), "not Log", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Неправильный пароль или имя пользователя", Toast.LENGTH_SHORT).show();
 
                     }
                 }
@@ -100,7 +99,6 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser cUser = mAuth.getCurrentUser();
         if (cUser!=null){
             Signed();
-
             String userName = "Вы вошли как:" + cUser.getEmail();
             your_name_text.setText(userName);
         }
@@ -108,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
             main_act_btn.setVisibility(View.GONE);
             your_name_text.setVisibility(View.GONE);
             singOut.setVisibility(View.GONE);
+
             login.setVisibility(View.VISIBLE);
             pass.setVisibility(View.VISIBLE);
             logIN.setVisibility(View.VISIBLE);
@@ -148,6 +147,10 @@ public class LoginActivity extends AppCompatActivity {
 
         Intent i =new Intent(LoginActivity.this, MainActivity.class);
         i.putExtra("EmailDB", cUser.getEmail());
+        i.putExtra("iduser", cUser.getUid());
+        Logsost = 1;
+        i.putExtra("Logsost1", Logsost);
+
         startActivity(i);
 
     }

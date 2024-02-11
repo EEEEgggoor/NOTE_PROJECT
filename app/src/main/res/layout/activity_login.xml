@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".LoginActivity">
+
 
     <Button
         android:id="@+id/main_act_btn"
@@ -12,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="268dp"
         android:onClick="onClickStart"
-        android:text="Button"
+        android:text="Войти"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,27 +37,45 @@
         android:id="@+id/yout_name_text"
         android:layout_width="221dp"
         android:layout_height="65dp"
-        android:layout_marginEnd="116dp"
         android:layout_marginBottom="380dp"
         android:text="TextView"
+
+        android:textColor="@color/white"
         android:textSize="25sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/login"
         android:layout_width="391dp"
         android:layout_height="54dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="84dp"
         android:ems="10"
         android:inputType="text"
         android:text="Login"
+        android:textColor="@color/white"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/pass"
+        android:layout_width="379dp"
+        android:layout_height="64dp"
+        android:layout_marginBottom="456dp"
+        android:ems="10"
+        android:inputType="text"
+        android:onClick="onClickSignIn"
+        android:text="Password"
+
+        android:textColor="@color/white"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/sigIN"
@@ -64,7 +84,8 @@
         android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
         android:layout_marginBottom="176dp"
-        android:onClick="onClickLogIn"
+        android:background="#FFFFFF"
+        android:onClick="onClickSigIn"
         android:text="Войти"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -78,25 +99,13 @@
         android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
         android:layout_marginBottom="316dp"
-        android:onClick="onClickSignUp"
+        android:onClick="onClickLoginUp"
         android:text="Зарегестрироваться"
         android:visibility="visible"
+        app:iconTint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/pass"
-        android:layout_width="379dp"
-        android:layout_height="64dp"
-        android:layout_marginBottom="456dp"
-        android:ems="10"
-        android:inputType="text"
-        android:onClick="onClickSignIn"
-        android:text="Password"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:strokeColor="#000000" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

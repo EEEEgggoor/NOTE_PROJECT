@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:background="@color/color5"
+        android:background="#C5C5C5"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -75,9 +75,6 @@
             >
 
         </TextView>
-
-
-
 
 
     </LinearLayout>

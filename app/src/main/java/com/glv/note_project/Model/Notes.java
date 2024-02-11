@@ -13,10 +13,6 @@ public class Notes implements Serializable {
     @PrimaryKey(autoGenerate = true)
     int ID = 0;
 
-
-
-
-
     @ColumnInfo(name = "title")
     String title = "";
 
@@ -26,10 +22,14 @@ public class Notes implements Serializable {
     @ColumnInfo(name = "data")
     String data = "";
 
-
+    @ColumnInfo(name = "unique_id")
+    public
+    String unique_id = "";
 
     @ColumnInfo(name = "pinned")
     boolean pinned = false;
+
+
 
     public int getID() {
         return ID;
@@ -39,7 +39,6 @@ public class Notes implements Serializable {
         this.ID = ID;
     }
 
-
     public String getTitle() {
         return title;
     }
@@ -47,12 +46,6 @@ public class Notes implements Serializable {
     public void setTitle(String title) {
         this.title = title;
     }
-
-
-
-
-
-
 
     public String getNotes() {
         return notes;
@@ -62,15 +55,21 @@ public class Notes implements Serializable {
         this.notes = notes;
     }
 
-
-
     public String getData() {
         return data;
     }
 
-    public void setData(String data) {this.data = data;}
+    public void setData(String data) {
+        this.data = data;
+    }
 
+    public String getUnique_id() {
+        return unique_id;
+    }
 
+    public void setUnique_id(String unique_id) {
+        this.unique_id = unique_id;
+    }
 
     public boolean isPinned() {
         return pinned;
@@ -79,7 +78,4 @@ public class Notes implements Serializable {
     public void setPinned(boolean pinned) {
         this.pinned = pinned;
     }
-
-
-
 }
