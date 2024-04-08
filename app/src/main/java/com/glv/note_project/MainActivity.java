@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         fab_clear.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setTitle("Удалить все заметки?")
-                    .setMessage("Вы уверены?")
+                    .setMessage("Вы уверены? Будут удалены даже закреплённые заметки")
                     .setPositiveButton("OK", (dialog, id) -> {
                         database.mainDAO().delete_all(notes);
                         notes.removeAll(notes);
