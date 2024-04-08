@@ -36,6 +36,7 @@ public class NotesTakerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notes_taker);
 
         imageView_save = findViewById(R.id.imageView_save);
+
         editText_note = findViewById(R.id.editText_note);
         editText_title = findViewById(R.id.editText_title);
         User_Note_key1 = getIntent().getStringExtra("EmailName").toString();
@@ -60,71 +61,71 @@ public class NotesTakerActivity extends AppCompatActivity {
 
             isOldNote = true;
 
-        } catch (Exception e) {
-
-
-        }
+        } catch (Exception e) {}
 
 
         //создание заметки
-        imageView_save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        imageView_save.setOnClickListener(v -> {
 
 
-                String title = editText_title.getText().toString();
-                String note_title = editText_note.getText().toString();
+            String title = editText_title.getText().toString();
+            String note_title = editText_note.getText().toString();
 
-                if (note_title.isEmpty()) {
-                    Toast.makeText(NotesTakerActivity.this, "Enter Title", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy");
-                Date date = new Date();
-
-                if (!isOldNote) {
-                    notes = new Notes();
-
-
-                    notes.setTitle(title);
-                    notes.setNotes(note_title);
-                    notes.setData(format.format(date));
-                    notes.setUnique_id(Unique_name_notes);
-                    Intent intent = new Intent();
-                    intent.putExtra("notes", notes);
-                    setResult(Activity.RESULT_OK, intent);
-
-
-//              добавление в конструктор Notes_FB листвьюва notes
-                    Notes_FB new_notes_fb = new Notes_FB(notes.getTitle(), notes.getNotes(), notes.getData(), notes.isPinned(), notes.getID(), notes.getUnique_id());
-                    mDataBase = FirebaseDatabase.getInstance().getReference("User_Note");
-                    mDataBase.child(User_Note_key123).child(Unique_name_notes).setValue(new_notes_fb);
-                }
-
-                if (isOldNote){
-                    notes.setTitle(title);
-                    notes.setNotes(note_title);
-                    notes.setData(format.format(date));
-                    notes.setUnique_id(Unique_name_notes);
-                    Intent intent = new Intent();
-                    intent.putExtra("notes", notes);
-                    setResult(Activity.RESULT_OK, intent);
-
-
-//              добавление в конструктор Notes_FB листвьюва notes
-                    Notes_FB new_notes_fb = new Notes_FB(notes.getTitle(), notes.getNotes(), notes.getData(), notes.isPinned(), notes.getID(), notes.getUnique_id());
-                    mDataBase = FirebaseDatabase.getInstance().getReference("User_Note");
-                    mDataBase.child(User_Note_key123).child(name1).setValue(new_notes_fb);
-                }
-
-                Toast.makeText(NotesTakerActivity.this, "Enter note", Toast.LENGTH_SHORT).show();
-
-
-                finish();
-
-
+            if (note_title.isEmpty()) {
+                Toast.makeText(NotesTakerActivity.this, "Enter Title", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy");
+            Date date = new Date();
+
+            if (!isOldNote) {
+                notes = new Notes();
+
+
+                notes.setTitle(title);
+                notes.setNotes(note_title);
+                notes.setData(format.format(date));
+                notes.setUnique_id(Unique_name_notes);
+                Intent intent = new Intent();
+                intent.putExtra("notes", notes);
+                setResult(Activity.RESULT_OK, intent);
+
+
+
+
+//              добавление в конструктор Notes_FB листвьюва notes
+                Notes_FB new_notes_fb = new Notes_FB(notes.getTitle(), notes.getNotes(), notes.getData(), notes.isPinned(), notes.getID(), notes.getUnique_id());
+                mDataBase = FirebaseDatabase.getInstance().getReference("User_Note");
+                mDataBase.child(User_Note_key123).child(Unique_name_notes).setValue(new_notes_fb);
+                mDataBase.child(User_Note_key123).child(Unique_name_notes).child("Unique_id").setValue(Unique_name_notes);
+            }
+
+            if (isOldNote){
+                notes.setTitle(title);
+                notes.setNotes(note_title);
+                notes.setData(format.format(date));
+                notes.setUnique_id(Unique_name_notes);
+                Intent intent = new Intent();
+                intent.putExtra("notes", notes);
+                setResult(Activity.RESULT_OK, intent);
+
+
+//              добавление в конструктор Notes_FB листвьюва notes
+                Notes_FB new_notes_fb = new Notes_FB(notes.getTitle(), notes.getNotes(), notes.getData(), notes.isPinned(), notes.getID(), notes.getUnique_id());
+                mDataBase = FirebaseDatabase.getInstance().getReference("User_Note");
+                mDataBase.child(User_Note_key123).child(name1).setValue(new_notes_fb);
+                mDataBase.child(User_Note_key123).child(name1).child("Unique_id").setValue(name1);
+            }
+
+            Toast.makeText(NotesTakerActivity.this, "Enter note", Toast.LENGTH_SHORT).show();
+
+
+            finish();
+
+
         });
+
+
     }
 }

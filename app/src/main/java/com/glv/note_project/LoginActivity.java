@@ -25,13 +25,12 @@ public class LoginActivity extends AppCompatActivity {
     private Button logIN, main_act_btn, singOut;
     private FirebaseAuth mAuth;
     private Button sigIN;
-    private String requesrQode;
-    private int Logsost;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Logsost = 0;
         setContentView(R.layout.activity_login);
         login = findViewById(R.id.login);
         pass = findViewById(R.id.pass);
@@ -48,6 +47,9 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
+
+                        EmailVer();
+
                         FirebaseUser cUser = mAuth.getCurrentUser();
                         if (cUser!=null){
                             Signed();
@@ -123,13 +125,22 @@ public class LoginActivity extends AppCompatActivity {
             notSigned();
         }
     }private void Signed(){
-        main_act_btn.setVisibility(View.VISIBLE);
-        your_name_text.setVisibility(View.VISIBLE);
-        login.setVisibility(View.GONE);
-        pass.setVisibility(View.GONE);
-        logIN.setVisibility(View.GONE);
-        sigIN.setVisibility(View.GONE);
-        singOut.setVisibility(View.VISIBLE);
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user.isEmailVerified()) {
+            main_act_btn.setVisibility(View.VISIBLE);
+            your_name_text.setVisibility(View.VISIBLE);
+            singOut.setVisibility(View.VISIBLE);
+            login.setVisibility(View.GONE);
+            pass.setVisibility(View.GONE);
+            logIN.setVisibility(View.GONE);
+            sigIN.setVisibility(View.GONE);
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Подтверждение отправлено на вашу электронную почту.", Toast.LENGTH_SHORT).show();
+
+        }
+
     }
     private void notSigned(){
         main_act_btn.setVisibility(View.GONE);
@@ -148,11 +159,32 @@ public class LoginActivity extends AppCompatActivity {
         Intent i =new Intent(LoginActivity.this, MainActivity.class);
         i.putExtra("EmailDB", cUser.getEmail());
         i.putExtra("iduser", cUser.getUid());
-        Logsost = 1;
-        i.putExtra("Logsost1", Logsost);
+
 
         startActivity(i);
 
+    }
+
+    private void EmailVer(){
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        assert user!=null;
+
+        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                {
+                    Toast.makeText(getApplicationContext(), "Подтверждение отправлено на вашу электронную почту.", Toast.LENGTH_SHORT).show();
+
+                }
+
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "Подтверждение провалено", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
 }

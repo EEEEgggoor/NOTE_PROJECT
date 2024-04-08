@@ -3,10 +3,9 @@ package com.glv.note_project;
 
 
 public class Notes_FB {
-    public String title, notes, data;
+    public String title, notes, data,Unique_id;
     public boolean pinned;
     int ID;
-    String Unique_id;
 
     public Notes_FB() {
     }
