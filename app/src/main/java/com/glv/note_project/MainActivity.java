@@ -119,10 +119,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                         notesListAdapter.notifyDataSetChanged();
 
                     })
-                    .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+                    .setNegativeButton("Отмена", (dialog, id) -> {
 
-                        }
                     });
             builder.create().show();
         });
@@ -266,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
             }
             else{
-                Toast.makeText(MainActivity.this, "Заметка закреплена", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Для удаления нужно открепить заметку", Toast.LENGTH_SHORT).show();
             }
             return true;
         }
