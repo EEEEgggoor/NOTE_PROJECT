@@ -12,10 +12,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.glv.note_project.Model.Notes;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,17 +23,16 @@ public class NotesTakerActivity extends AppCompatActivity {
     EditText editText_note, editText_title;
     ImageView imageView_save;
     Notes notes;
-    String User_Note_key1, Unique_name_notes;
+    String User_Note_key1, Unique_name_notes, Unique_id;;
     DatabaseReference mDataBase;
-    String Unique_id;
-    boolean isOldNote = false;
+    boolean isOldNote;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes_taker);
-
+        isOldNote = false;
         imageView_save = findViewById(R.id.imageView_save);
 
         editText_note = findViewById(R.id.editText_note);
