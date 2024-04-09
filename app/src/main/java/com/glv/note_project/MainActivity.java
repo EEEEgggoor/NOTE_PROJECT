@@ -37,16 +37,15 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     RecyclerView recyclerView;
-
-
     FloatingActionButton fab_add, fab_clear, reload_btn;
     NotesListAdapter notesListAdapter;
     RoomDB database;
     Notes selectednote;
     SearchView searchView_home;
-    List<Notes> notes = new ArrayList<>();
+    List<Notes> notes;
     DatabaseReference mDataBase;
-    String User_Note_key = "User_Note", UserEmailName;
+    String User_Note_key, UserEmailName;
+
 
 
     @Override
@@ -54,7 +53,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        notes = new ArrayList<>();
+        User_Note_key = "User_Note";
         recyclerView = findViewById(R.id.recycler_home);
         fab_add = findViewById(R.id.fab_add);
         fab_clear = findViewById(R.id.fab_clear);
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         fab_add.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
             intent.putExtra("EmailName", getIntent().getStringExtra("EmailDB"));
-            intent.putExtra("size_notes", ("" + notes.size()));
+            intent.putExtra("size_notes", (String.valueOf(notes.size())));
             startActivityForResult(intent, 101);
 
         });
@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     notret.setUnique_id(return_note_FB.Unique_id);
                     notret.setPinned(return_note_FB.pinned);
                     notes.add(notret);
+                    database.mainDAO().insert(notret);
                 }
 
                 notesListAdapter.notifyDataSetChanged();
@@ -193,14 +194,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notesListAdapter.notifyDataSetChanged();
 
 
-
-
             }
         }
         if (requestCode == 102) {
             if (resultCode == Activity.RESULT_OK) {
                 Notes new_notes = (Notes) data.getSerializableExtra("notes");
-                database.mainDAO().update(new_notes.getID(), new_notes.getTitle(), new_notes.getNotes());
+                database.mainDAO().update(new_notes.getID(), new_notes.getTitle(), new_notes.getNotes(), new_notes.getData());
                 notes.clear();
                 notes.addAll(database.mainDAO().getAll());
                 notesListAdapter.notifyDataSetChanged();
@@ -254,27 +253,25 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
 
         if (item.getItemId() == R.id.Delete) {
-            if (selectednote.isPinned()==false) {
+            if (selectednote.isPinned() == false) {
                 String delete_Unique_id = selectednote.getUnique_id();
                 database.mainDAO().delete(selectednote);
                 notes.remove(selectednote);
                 notesListAdapter.notifyDataSetChanged();
                 mDataBase.child(UserEmailName).child(delete_Unique_id).removeValue();
 
-            }
-            else{
+            } else {
                 Toast.makeText(MainActivity.this, "Для удаления нужно открепить заметку", Toast.LENGTH_SHORT).show();
             }
             return true;
         }
         if (item.getItemId() == R.id.pin) {
             String pin_Unique_id = selectednote.getUnique_id();
-            if (selectednote.isPinned()){
+            if (selectednote.isPinned()) {
                 database.mainDAO().pin(selectednote.getID(), false);
                 Toast.makeText(MainActivity.this, "Заметка окреплена", Toast.LENGTH_SHORT).show();
                 mDataBase.child(UserEmailName).child(pin_Unique_id).child("pinned").setValue(false);
-            }
-            else{
+            } else {
                 database.mainDAO().pin(selectednote.getID(), true);
                 Toast.makeText(MainActivity.this, "Заметка закреплена", Toast.LENGTH_SHORT).show();
                 mDataBase.child(UserEmailName).child(pin_Unique_id).child("pinned").setValue(true);

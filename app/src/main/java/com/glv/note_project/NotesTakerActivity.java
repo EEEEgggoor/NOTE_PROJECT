@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -23,16 +23,16 @@ public class NotesTakerActivity extends AppCompatActivity {
     EditText editText_note, editText_title;
     ImageView imageView_save;
     Notes notes;
-    String User_Note_key1, Unique_name_notes, Unique_id;;
+    String User_Note_key1, Unique_name_notes, Unique_id;
     DatabaseReference mDataBase;
-    boolean isOldNote;
+    boolean isOldNote = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes_taker);
-        isOldNote = false;
+
         imageView_save = findViewById(R.id.imageView_save);
 
         editText_note = findViewById(R.id.editText_note);
@@ -44,8 +44,6 @@ public class NotesTakerActivity extends AppCompatActivity {
 
         String User_Note_key123 = User_Note_key1.split("@")[0];
         Unique_name_notes = User_Note_key123 + Unique_id;
-
-        Toast.makeText(NotesTakerActivity.this, name1, Toast.LENGTH_SHORT).show();
 
 
         notes = new Notes();
@@ -68,11 +66,6 @@ public class NotesTakerActivity extends AppCompatActivity {
 
             String title = editText_title.getText().toString();
             String note_title = editText_note.getText().toString();
-
-            if (note_title.isEmpty()) {
-                Toast.makeText(NotesTakerActivity.this, "Enter Title", Toast.LENGTH_SHORT).show();
-                return;
-            }
 
             SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy");
             Date date = new Date();
