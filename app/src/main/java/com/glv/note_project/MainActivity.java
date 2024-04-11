@@ -33,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     .setMessage("Вы уверены? Будут удалены даже закреплённые заметки")
                     .setPositiveButton("OK", (dialog, id) -> {
                         database.mainDAO().delete_all(notes);
-                        notes.removeAll(notes);
+                        notes.clear();
                         mDataBase.child(UserEmailName).removeValue();
 
                         notesListAdapter.notifyDataSetChanged();
@@ -127,15 +128,14 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     }
 
+
     private void add_Note_from_BD(String UserEmailName) {
         ValueEventListener vListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (notes.size() > 0) {
-                    notes.clear();
-                    database.mainDAO().delete_all(notes);
-                    notesListAdapter.notifyDataSetChanged();
-                }
+                notes.clear();
+                database.clearAllTables();
+                notesListAdapter.notifyDataSetChanged();
 
                 for (DataSnapshot DS : snapshot.child(UserEmailName).getChildren()) {
                     Notes_FB return_note_FB = DS.getValue(Notes_FB.class);
@@ -147,10 +147,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     notret.setUnique_id(return_note_FB.Unique_id);
                     notret.setPinned(return_note_FB.pinned);
                     notes.add(notret);
-                    database.mainDAO().insert(notret);
                 }
-
+                database.mainDAO().inserAll(notes);
                 notesListAdapter.notifyDataSetChanged();
+
+
             }
 
             @Override
@@ -180,10 +181,26 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         }
     }
 
+    protected void del_dublicate(int notsize, List<Notes> notes){
+        int nt = (notsize);
+        for (int i = 0; i < nt-1; i++) {
+            Notes k = notes.get(i);
+            Notes j = notes.get(i+1);
+            String k_uq = k.getUnique_id();
+            String j_uq = j.getUnique_id();
 
+            if (Objects.equals(k_uq, j_uq.intern())){
+                notes.remove(j);
+                database.mainDAO().delete(j);
+                notesListAdapter.notifyDataSetChanged();
+                break;
+            }
+        }
+    };
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
 
         if (requestCode == 101) {
             if (resultCode == Activity.RESULT_OK) {
@@ -192,10 +209,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.mainDAO().getAll());
                 notesListAdapter.notifyDataSetChanged();
-
+                del_dublicate(notes.size(), notes);
 
             }
         }
+
         if (requestCode == 102) {
             if (resultCode == Activity.RESULT_OK) {
                 Notes new_notes = (Notes) data.getSerializableExtra("notes");
@@ -203,8 +221,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.mainDAO().getAll());
                 notesListAdapter.notifyDataSetChanged();
-
-
             }
         }
 
@@ -228,9 +244,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             intent.putExtra("Unique_name_notes", notes.getUnique_id());
             intent.putExtra("EmailName", getIntent().getStringExtra("EmailDB"));
             startActivityForResult(intent, 102);
-
-
         }
+
 
         @Override
         public void onLongClick(Notes notes, CardView cardView) {
