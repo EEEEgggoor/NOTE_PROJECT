@@ -43,10 +43,9 @@
                 android:layout_height="39dp"
                 android:layout_alignParentEnd="true"
                 android:foreground="@android:drawable/ic_input_get"
-                android:src="@drawable/save1"
+                android:src="@android:drawable/ic_input_get"
                 android:visibility="visible"
-                app:srcCompat="@android:drawable/ic_input_get"
-                tools:srcCompat="@android:drawable/ic_input_get" />
+                />
 
         </RelativeLayout>
 
