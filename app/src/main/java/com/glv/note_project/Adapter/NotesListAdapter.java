@@ -51,6 +51,14 @@ public class NotesListAdapter extends RecyclerView.Adapter <NotesViewHolder>{
         holder.textView_date.setSelected(true);
 
 
+        if (list.get(position).isPinned()) {
+            holder.imageView_pin.setImageResource(R.drawable.baseline_push_pin_24);
+        }
+        else {
+            holder.imageView_pin.setImageResource(0);
+        }
+
+
 
         holder.notes_container.setOnClickListener(new View.OnClickListener() {
             @Override
