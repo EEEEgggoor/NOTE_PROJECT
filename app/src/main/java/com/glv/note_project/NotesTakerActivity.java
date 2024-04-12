@@ -109,7 +109,7 @@ public class NotesTakerActivity extends AppCompatActivity {
                 mDataBase.child(User_Note_key123).child(name1).child("Unique_id").setValue(name1);
             }
 
-            Toast.makeText(NotesTakerActivity.this, "Enter note", Toast.LENGTH_SHORT).show();
+
 
 
             finish();

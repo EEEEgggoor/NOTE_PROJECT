@@ -1,3 +1,4 @@
+
 package com.glv.note_project;
 
 import androidx.annotation.NonNull;
@@ -284,10 +285,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             String pin_Unique_id = selectednote.getUnique_id();
             if (selectednote.isPinned()) {
                 database.mainDAO().pin(selectednote.getID(), false);
+                notesListAdapter.notifyDataSetChanged();
                 Toast.makeText(MainActivity.this, "Заметка окреплена", Toast.LENGTH_SHORT).show();
                 mDataBase.child(UserEmailName).child(pin_Unique_id).child("pinned").setValue(false);
             } else {
                 database.mainDAO().pin(selectednote.getID(), true);
+                notesListAdapter.notifyDataSetChanged();
                 Toast.makeText(MainActivity.this, "Заметка закреплена", Toast.LENGTH_SHORT).show();
                 mDataBase.child(UserEmailName).child(pin_Unique_id).child("pinned").setValue(true);
             }
