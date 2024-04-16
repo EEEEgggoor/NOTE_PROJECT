@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color5"
+    android:background="@color/black"
     android:orientation="vertical"
     tools:context=".NotesTakerActivity">
 
@@ -14,7 +14,7 @@
         android:id="@+id/toolbar_notes"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#FFFFFF"
+        android:background="@color/color6"
         app:title="@string/app_name">
 
         <RelativeLayout
@@ -42,7 +42,7 @@
         android:hint="Title:"
         android:padding="8dp"
         android:singleLine="true"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="20sp"
         android:textStyle="bold" />
@@ -55,7 +55,7 @@
 
         android:hint="Note:"
         android:padding="8dp"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="18sp"
         android:textStyle="normal" />
