@@ -3,7 +3,7 @@
     <style name="Base.Theme.NOTE_PROJECT" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/color1</item>
         <item name="colorPrimaryVariant">@color/color1</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>ы
         <item name="colorSecondary">@color/color5</item>
         <item name="colorSecondaryVariant">@color/color5</item>
         <item name="colorOnSecondary">@color/black</item>
