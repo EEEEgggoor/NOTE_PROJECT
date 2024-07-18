@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/rel_for_db"
+        android:title="Обновить"/>
+    <item
+        android:id = "@+id/select_all"
+        android:title = "Выделить всё"
+        />
+    <item
+        android:title="Удалить всё"
+        android:id="@+id/all_del"
+        />
+</menu>

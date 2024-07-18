@@ -1,12 +1,14 @@
-
 package com.glv.note_project;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -15,17 +17,23 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
 
-
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.glv.note_project.Adapter.NotesListAdapter;
 import com.glv.note_project.DataBase.RoomDB;
 import com.glv.note_project.Model.Notes;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,7 +47,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     RecyclerView recyclerView;
-    FloatingActionButton fab_add, fab_clear, reload_btn;
+    FloatingActionButton fab_add;
     NotesListAdapter notesListAdapter;
     RoomDB database;
     Notes selectednote;
@@ -47,34 +55,41 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     List<Notes> notes;
     DatabaseReference mDataBase;
     String User_Note_key, UserEmailName;
-
-
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
+    ActionBarDrawerToggle toggle;
+    CheckBox chbox;
+    RecyclerView recycler_home;
+    String const_size_string;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        notes = new ArrayList<>();
-        User_Note_key = "User_Note";
+
+        LayoutInflater mak_card_view = LayoutInflater.from(this);
+        View card_note = mak_card_view.inflate(R.layout.notes_list, recycler_home, false);
+
+        chbox = card_note.findViewById(R.id.check_Box);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
         recyclerView = findViewById(R.id.recycler_home);
         fab_add = findViewById(R.id.fab_add);
-        fab_clear = findViewById(R.id.fab_clear);
-        reload_btn = findViewById(R.id.reload_button);
-        mDataBase = FirebaseDatabase.getInstance().getReference(User_Note_key);
         searchView_home = findViewById(R.id.searchView_home);
-
+        notes = new ArrayList<>();
+        User_Note_key = "User_Note";
+        mDataBase = FirebaseDatabase.getInstance().getReference(User_Note_key);
         UserEmailName = getIntent().getStringExtra("EmailDB");
-
-
         UserEmailName = "" + UserEmailName.split("@")[0];
-
-
         database = RoomDB.getInstance(this);
         notes = database.mainDAO().getAll();
-
-
         updateRecycle(notes);
+
+
+        setSupportActionBar(findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        setupDrawer(UserEmailName);
 
 
         fab_add.setOnClickListener(v -> {
@@ -82,17 +97,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             intent.putExtra("EmailName", getIntent().getStringExtra("EmailDB"));
             intent.putExtra("size_notes", (String.valueOf(notes.size())));
             startActivityForResult(intent, 101);
-
         });
 
-        reload_btn.setOnClickListener(v -> {
 
-            database.mainDAO().delete_all(notes);
-            notes.removeAll(notes);
-            notesListAdapter.notifyDataSetChanged();
-
-            add_Note_from_BD(UserEmailName);
-        });
 
         searchView_home.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -107,28 +114,79 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         });
 
-
-        fab_clear.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle("Удалить все заметки?")
-                    .setMessage("Вы уверены? Будут удалены даже закреплённые заметки")
-                    .setPositiveButton("OK", (dialog, id) -> {
-                        database.mainDAO().delete_all(notes);
-                        notes.clear();
-                        mDataBase.child(UserEmailName).removeValue();
-
-                        notesListAdapter.notifyDataSetChanged();
-
-                    })
-                    .setNegativeButton("Отмена", (dialog, id) -> {
-
-                    });
-            builder.create().show();
-        });
-
-
     }
 
+    public int install_const_size(String UserEmailName) {
+        ValueEventListener vListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot DS : snapshot.child(UserEmailName).getChildren()) {
+                    String m = DS.getValue(Notes_FB.class).Unique_id;
+                    const_size_string = "" + m.charAt(m.length() - 1);
+                }
+                Log.d("MainActivity", const_size_string);
+                int const_size = Integer.parseInt(const_size_string.trim());
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        };
+        mDataBase.addValueEventListener(vListener);
+        return const_size;
+    }
+
+
+    private void setupDrawer(String userEmailName) {
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        View headerView = navigationView.getHeaderView(0);
+
+        TextView textViewUsername = headerView.findViewById(R.id.nav_header_title);
+        textViewUsername.setText(userEmailName);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        toggle.setToolbarNavigationClickListener(v -> {
+            if (drawerLayout.isDrawerVisible(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+        navigationView.setNavigationItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.home_n) {
+                Toast.makeText(this, "Home selected", Toast.LENGTH_SHORT).show();
+            }
+            if (item.getItemId() == R.id.nav_settings) {
+                Toast.makeText(this, "Settings selected", Toast.LENGTH_SHORT).show();
+            }
+            if (item.getItemId() == R.id.nav_about) {
+                Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(i);
+                FirebaseAuth.getInstance().signOut();
+            }
+
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (onTopItemSelected(item)) {
+            return true;
+        }
+        if (toggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void add_Note_from_BD(String UserEmailName) {
         ValueEventListener vListener = new ValueEventListener() {
@@ -151,8 +209,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 }
                 database.mainDAO().inserAll(notes);
                 notesListAdapter.notifyDataSetChanged();
-
-
             }
 
             @Override
@@ -162,8 +218,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         mDataBase.addValueEventListener(vListener);
     }
 
-
-    //    Фильрт
     private void filter(String newText) {
         List<Notes> filteredList = new ArrayList<>();
         boolean isFilterApplied = !newText.isEmpty();
@@ -197,11 +251,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 break;
             }
         }
-    };
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
 
         if (requestCode == 101) {
             if (resultCode == Activity.RESULT_OK) {
@@ -211,7 +265,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.addAll(database.mainDAO().getAll());
                 notesListAdapter.notifyDataSetChanged();
                 del_dublicate(notes.size(), notes);
-
             }
         }
 
@@ -224,7 +277,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notesListAdapter.notifyDataSetChanged();
             }
         }
-
     }
 
     private void updateRecycle(List<Notes> notes) {
@@ -232,8 +284,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL));
         notesListAdapter = new NotesListAdapter(MainActivity.this, notes, notesClickListener);
         recyclerView.setAdapter(notesListAdapter);
-
-
     }
 
     private final NotesClickListener notesClickListener = new NotesClickListener() {
@@ -241,18 +291,16 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         public void onClick(Notes notes) {
             Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
             intent.putExtra("old_notes", notes);
-            Toast.makeText(MainActivity.this, notes.getUnique_id(), Toast.LENGTH_SHORT).show();
             intent.putExtra("Unique_name_notes", notes.getUnique_id());
             intent.putExtra("EmailName", getIntent().getStringExtra("EmailDB"));
             startActivityForResult(intent, 102);
         }
 
-
         @Override
         public void onLongClick(Notes notes, CardView cardView) {
-            selectednote = new Notes();
             selectednote = notes;
             showPopUp(cardView);
+
         }
     };
 
@@ -261,21 +309,85 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         popupMenu.setOnMenuItemClickListener(this);
         popupMenu.inflate(R.menu.popup_menu);
         popupMenu.show();
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_in_toolbar, menu);
+        return true;
+    }
+
+
+    private boolean onTopItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        mDataBase = FirebaseDatabase.getInstance().getReference("User_Note");
+        if (id == R.id.all_del) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Удалить выделенные заметки?")
+                    .setPositiveButton("OK", (dialog, id1) -> {
+                        if (notes.size()==1 & notes.get(0).isCheck_state()==true){
+                            mDataBase.child(UserEmailName).child(notes.get(0).getUnique_id()).removeValue();
+                            database.mainDAO().delete_all(notes);
+                            notes.clear();
+
+                            notesListAdapter.notifyDataSetChanged();
+
+                        }
+                        else {
+                            for (int i = 0; i < (notes.size()); i++) {
+                                if (notes.get(i).isCheck_state()) {
+                                    mDataBase.child(UserEmailName).child(notes.get(i).getUnique_id()).removeValue();
+                                    database.mainDAO().delete_all(notes);
+                                    notesListAdapter.notifyDataSetChanged();
+                                    add_Note_from_BD(UserEmailName);
+
+
+                                    Toast.makeText(MainActivity.this, (notes.size()) + "_" + i + "_" + notes.get(i).getTitle(), Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+                        }
+
+                    })
+                    .setNegativeButton("Отмена", (dialog, id12) -> {
+
+                    });
+            builder.create().show();
+            return true;
+        }
+
+        if (id == R.id.rel_for_db) {
+            database.mainDAO().delete_all(notes);
+            notes.clear();
+            notesListAdapter.notifyDataSetChanged();
+            add_Note_from_BD(UserEmailName);
+            install_const_size(UserEmailName);
+            return true;
+        }
+
+        if (id == R.id.select_all) {
+            if (notes.get(0).isChek()==false){ for (int i = 0; i < notes.size(); i++){ notes.get(i).setChek(true); }
+                notesListAdapter.notifyDataSetChanged();}
+
+
+            else { for (int i = 0; i < notes.size(); i++){ notes.get(i).setChek(false); }
+                notesListAdapter.notifyDataSetChanged();}
+        }
+
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-
-
         if (item.getItemId() == R.id.Delete) {
-            if (selectednote.isPinned() == false) {
+            if (!selectednote.isPinned()) {
                 String delete_Unique_id = selectednote.getUnique_id();
                 database.mainDAO().delete(selectednote);
                 notes.remove(selectednote);
                 notesListAdapter.notifyDataSetChanged();
                 mDataBase.child(UserEmailName).child(delete_Unique_id).removeValue();
-
             } else {
                 Toast.makeText(MainActivity.this, "Для удаления нужно открепить заметку", Toast.LENGTH_SHORT).show();
             }
@@ -286,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             if (selectednote.isPinned()) {
                 database.mainDAO().pin(selectednote.getID(), false);
                 notesListAdapter.notifyDataSetChanged();
-                Toast.makeText(MainActivity.this, "Заметка окреплена", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Заметка откреплена", Toast.LENGTH_SHORT).show();
                 mDataBase.child(UserEmailName).child(pin_Unique_id).child("pinned").setValue(false);
             } else {
                 database.mainDAO().pin(selectednote.getID(), true);
@@ -294,6 +406,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 Toast.makeText(MainActivity.this, "Заметка закреплена", Toast.LENGTH_SHORT).show();
                 mDataBase.child(UserEmailName).child(pin_Unique_id).child("pinned").setValue(true);
             }
+
         }
         notes.clear();
         notes.addAll(database.mainDAO().getAll());

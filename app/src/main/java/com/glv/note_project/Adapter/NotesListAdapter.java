@@ -3,12 +3,16 @@ package com.glv.note_project.Adapter;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -59,6 +63,29 @@ public class NotesListAdapter extends RecyclerView.Adapter <NotesViewHolder>{
         }
 
 
+        if (list.get(position).isChek()) {
+            holder.check_box.setVisibility(View.VISIBLE);
+            holder.check_box.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        list.get(position).setCheck_state(true);
+                        Log.d("MainActivity", "ChecckBox was not clicked!" + (list.get(position).isCheck_state()));
+                    } else {
+                        list.get(position).setCheck_state(false);
+                        Log.d("MainActivity", "ChecckBox was not clicked!" + (list.get(position).isCheck_state()));
+                    }
+                }
+            });
+        }
+        else {
+            holder.check_box.setVisibility(View.GONE);
+        }
+
+
+
+
+
 
         holder.notes_container.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +123,7 @@ class NotesViewHolder extends RecyclerView.ViewHolder {
     CardView notes_container;
     TextView textView_title, textView_notes, textView_date;
     ImageView imageView_pin;
+    CheckBox check_box;
 
     public NotesViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -105,6 +133,7 @@ class NotesViewHolder extends RecyclerView.ViewHolder {
         textView_notes = itemView.findViewById(R.id.textView_notes);
         textView_date = itemView.findViewById(R.id.textView_date);
         imageView_pin = itemView.findViewById(R.id.imageView_pin);
+        check_box = itemView.findViewById(R.id.check_Box);
 
 
 

@@ -3,7 +3,7 @@ package com.glv.note_project.Model;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.Query;
+
 
 import java.io.Serializable;
 
@@ -29,6 +29,11 @@ public class Notes implements Serializable {
     @ColumnInfo(name = "pinned")
     boolean pinned = false;
 
+    @ColumnInfo(name = "check")
+    boolean chek = false;
+
+    @ColumnInfo(name = "check_state")
+    boolean check_state = false;
 
 
     public int getID() {
@@ -77,5 +82,21 @@ public class Notes implements Serializable {
 
     public void setPinned(boolean pinned) {
         this.pinned = pinned;
+    }
+
+    public boolean isCheck_state() {
+        return check_state;
+    }
+
+    public void setCheck_state(boolean check_state) {
+        this.check_state = check_state;
+    }
+
+    public boolean isChek() {
+        return chek;
+    }
+
+    public void setChek(boolean chek) {
+        this.chek = chek;
     }
 }

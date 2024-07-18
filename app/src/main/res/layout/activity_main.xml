@@ -8,70 +8,69 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/reload_button"
-        android:layout_width="60dp"
-        android:layout_height="66dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="16dp"
-        android:clickable="true"
-        android:src="@android:drawable/ic_popup_sync"
-        app:backgroundTint="#C4EFC6" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_clear"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="26dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginBottom="26dp"
-        android:src="@android:drawable/ic_menu_delete"
-        app:backgroundTint="#F89899" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="26dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="26dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginBottom="26dp"
-        android:src="@drawable/add_1"
-        android:tint="#FFFFFF"
-        app:backgroundTint="#FFFFFF" />
-
-    <androidx.appcompat.widget.SearchView
-
-        android:id="@+id/searchView_home"
-        android:layout_width="309dp"
-        android:layout_height="63dp"
-        android:layout_alignParentTop="true"
-
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@color/color5"
-        app:iconifiedByDefault="false"
-        app:queryHint="Enter text..." />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_home"
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/searchView_home"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp" />
+        android:layout_height="match_parent">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?attr/colorPrimary"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_add"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="26dp"
+                android:layout_marginTop="26dp"
+                android:layout_marginEnd="26dp"
+                android:layout_marginBottom="26dp"
+                android:src="@drawable/add_1"
+                android:tint="#FFFFFF"
+                app:backgroundTint="#FFFFFF" />
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView_home"
+                android:layout_width="230dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="90dp"
+                android:layout_marginTop="11dp"
+                android:layout_marginEnd="36dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/color5"
+                app:iconifiedByDefault="false"
+                app:queryHint="Enter text..." />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_home"
+                android:layout_width="match_parent"
+                android:layout_height="607dp"
+                android:layout_below="@+id/searchView_home"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="0dp" />
+        </RelativeLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigation_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:headerLayout="@layout/nav_header"
+            app:menu="@menu/navigation_menu" />
+    </androidx.drawerlayout.widget.DrawerLayout>
 
 </RelativeLayout>
-

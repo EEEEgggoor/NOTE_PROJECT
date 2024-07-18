@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 
 import com.glv.note_project.Model.Notes;
 
-@Database(entities = Notes.class, version = 1, exportSchema = false)
+@Database(entities = Notes.class, version = 3, exportSchema = false)
 public abstract class RoomDB extends RoomDatabase {
 
 
