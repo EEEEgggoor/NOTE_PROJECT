@@ -41,8 +41,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
@@ -60,7 +65,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     ActionBarDrawerToggle toggle;
     CheckBox chbox;
     RecyclerView recycler_home;
-    String const_size_string;
+    public static String max_uniquenote_last_number;
+    int max_last_number, max_not_size;
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,19 +92,32 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         UserEmailName = "" + UserEmailName.split("@")[0];
         database = RoomDB.getInstance(this);
         notes = database.mainDAO().getAll();
+        max_last_number = -1000;
+        max_not_size=0;
+
         updateRecycle(notes);
 
 
         setSupportActionBar(findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         setupDrawer(UserEmailName);
-
+        add_Note_from_BD(UserEmailName);
 
         fab_add.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
             intent.putExtra("EmailName", getIntent().getStringExtra("EmailDB"));
-            intent.putExtra("size_notes", (String.valueOf(notes.size())));
+            intent.putExtra("size_notes", (max_uniquenote_last_number));
+
+
             startActivityForResult(intent, 101);
+        });
+
+
+        CompletableFuture<String> future = getData();
+        future.thenAccept(key -> {
+            max_uniquenote_last_number = key;
+
+
         });
 
 
@@ -116,25 +137,44 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     }
 
-    public int install_const_size(String UserEmailName) {
-        ValueEventListener vListener = new ValueEventListener() {
+
+    public CompletableFuture<String> getData() {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        mDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot DS : snapshot.child(UserEmailName).getChildren()) {
-                    String m = DS.getValue(Notes_FB.class).Unique_id;
-                    const_size_string = "" + m.charAt(m.length() - 1);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Map<String, Object> rootData = (Map<String, Object>) dataSnapshot.child(UserEmailName).getValue();
+
+                if (rootData != null) {
+
+                    HashMap<String, Object> rootDataMap = new HashMap<>(rootData);
+
+                    for (String key : rootDataMap.keySet()) {
+
+                        Pattern del_email = Pattern.compile(UserEmailName);
+                        Matcher matcher = del_email.matcher(key);
+
+                        int m = Integer.parseInt("" + matcher.replaceAll(""));
+                        max_last_number = Math.max(max_last_number, m);
+
+                    }
+                    max_uniquenote_last_number = "" + (max_last_number+1);
+                    future.complete(max_uniquenote_last_number);
+                    del_dublicate(notes.size(), notes);
+                } else {
+                    future.complete("-0");
                 }
-                Log.d("MainActivity", const_size_string);
-                int const_size = Integer.parseInt(const_size_string.trim());
+
 
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onCancelled(DatabaseError databaseError) {
+                // Обработка ошибок
+                System.err.println("Error: " + databaseError.getMessage());
             }
-        };
-        mDataBase.addValueEventListener(vListener);
-        return const_size;
+        });
+        return future;
+
     }
 
 
@@ -179,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (onTopItemSelected(item)) {
+        if (onTopItemSelected(item, notes.size())) {
             return true;
         }
         if (toggle.onOptionsItemSelected(item)){
@@ -189,6 +229,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
     private void add_Note_from_BD(String UserEmailName) {
+
         ValueEventListener vListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -206,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     notret.setUnique_id(return_note_FB.Unique_id);
                     notret.setPinned(return_note_FB.pinned);
                     notes.add(notret);
+                    getData();
                 }
                 database.mainDAO().inserAll(notes);
                 notesListAdapter.notifyDataSetChanged();
@@ -260,17 +302,20 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         if (requestCode == 101) {
             if (resultCode == Activity.RESULT_OK) {
                 Notes new_notes = (Notes) data.getSerializableExtra("notes");
+                getData();
                 database.mainDAO().insert(new_notes);
                 notes.clear();
                 notes.addAll(database.mainDAO().getAll());
                 notesListAdapter.notifyDataSetChanged();
                 del_dublicate(notes.size(), notes);
+
             }
         }
 
         if (requestCode == 102) {
             if (resultCode == Activity.RESULT_OK) {
                 Notes new_notes = (Notes) data.getSerializableExtra("notes");
+                getData();
                 database.mainDAO().update(new_notes.getID(), new_notes.getTitle(), new_notes.getNotes(), new_notes.getData());
                 notes.clear();
                 notes.addAll(database.mainDAO().getAll());
@@ -289,9 +334,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private final NotesClickListener notesClickListener = new NotesClickListener() {
         @Override
         public void onClick(Notes notes) {
+
+            Log.d(TAG, notes.getUnique_id());
+
             Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
             intent.putExtra("old_notes", notes);
-            intent.putExtra("Unique_name_notes", notes.getUnique_id());
+            intent.putExtra("Unique_name_notes", String.valueOf(notes.getUnique_id()));
             intent.putExtra("EmailName", getIntent().getStringExtra("EmailDB"));
             startActivityForResult(intent, 102);
         }
@@ -319,10 +367,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
 
-    private boolean onTopItemSelected(MenuItem item) {
+    private boolean onTopItemSelected(MenuItem item, int sizeN) {
         int id = item.getItemId();
+
         mDataBase = FirebaseDatabase.getInstance().getReference("User_Note");
         if (id == R.id.all_del) {
+
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setTitle("Удалить выделенные заметки?")
                     .setPositiveButton("OK", (dialog, id1) -> {
@@ -361,8 +411,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             database.mainDAO().delete_all(notes);
             notes.clear();
             notesListAdapter.notifyDataSetChanged();
+            max_not_size = (sizeN + Integer.parseInt(max_uniquenote_last_number));
+            Log.d("MainActivity","Global Key_for_update---------> " + max_not_size);
             add_Note_from_BD(UserEmailName);
-            install_const_size(UserEmailName);
+
             return true;
         }
 
