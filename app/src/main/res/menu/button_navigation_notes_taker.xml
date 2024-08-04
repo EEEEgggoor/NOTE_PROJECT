@@ -1,0 +1,11 @@
+<!-- res/menu/bottom_nav_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/buttonSetText"
+        android:title="ТЕГ"
+        />
+    <item
+        android:id="@+id/cursiv_tex_style"
+        android:title="UDERLINE"/>
+
+</menu>

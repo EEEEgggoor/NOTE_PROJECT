@@ -29,7 +29,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.glv.note_project.Adapter.NotesListAdapter;
-import com.glv.note_project.DataBase.RoomDB;
 import com.glv.note_project.Model.Notes;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -54,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     RecyclerView recyclerView;
     FloatingActionButton fab_add;
     NotesListAdapter notesListAdapter;
-    RoomDB database;
     Notes selectednote;
     SearchView searchView_home;
     List<Notes> notes;
@@ -65,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     ActionBarDrawerToggle toggle;
     CheckBox chbox;
     RecyclerView recycler_home;
+    TextView createnote_or_update;
     public static String max_uniquenote_last_number;
     int max_last_number, max_not_size;
 
@@ -85,17 +84,18 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         recyclerView = findViewById(R.id.recycler_home);
         fab_add = findViewById(R.id.fab_add);
         searchView_home = findViewById(R.id.searchView_home);
+        createnote_or_update = findViewById(R.id.createnote_or_update);
+
         notes = new ArrayList<>();
         User_Note_key = "User_Note";
         mDataBase = FirebaseDatabase.getInstance().getReference(User_Note_key);
         UserEmailName = getIntent().getStringExtra("EmailDB");
         UserEmailName = "" + UserEmailName.split("@")[0];
-        database = RoomDB.getInstance(this);
-        notes = database.mainDAO().getAll();
         max_last_number = -1000;
         max_not_size=0;
 
         updateRecycle(notes);
+        Text_update(notes.size());
 
 
         setSupportActionBar(findViewById(R.id.toolbar));
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
 
         });
-
+        add_Note_from_BD(UserEmailName);
 
 
         searchView_home.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -138,13 +138,38 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
 
+    private void Text_update(int notes_size){
+        mDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Map<String, Object> rootData = (Map<String, Object>) snapshot.child(UserEmailName).getValue();
+                if (rootData == null && notes_size==0){
+                    createnote_or_update.setText("Создайте заметку!");
+                    createnote_or_update.setVisibility(View.VISIBLE);
+                }
+                else if (rootData != null){
+                    createnote_or_update.setVisibility(View.GONE);
+
+                }
+                else if (rootData != null && notes_size==0){
+                    createnote_or_update.setText("Обновление...");
+                    createnote_or_update.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     public CompletableFuture<String> getData() {
         CompletableFuture<String> future = new CompletableFuture<>();
         mDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Map<String, Object> rootData = (Map<String, Object>) dataSnapshot.child(UserEmailName).getValue();
-
                 if (rootData != null) {
 
                     HashMap<String, Object> rootDataMap = new HashMap<>(rootData);
@@ -183,9 +208,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        View headerView = navigationView.getHeaderView(0);
+        View nav_header = navigationView.getHeaderView(0);
 
-        TextView textViewUsername = headerView.findViewById(R.id.nav_header_title);
+        TextView textViewUsername = nav_header.findViewById(R.id.nav_header_title);
         textViewUsername.setText(userEmailName);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -229,28 +254,33 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
     private void add_Note_from_BD(String UserEmailName) {
-
+        ArrayList<String> listunUD = new ArrayList<>();
         ValueEventListener vListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                notes.clear();
-                database.clearAllTables();
-                notesListAdapter.notifyDataSetChanged();
+
+                for(int i=0; i<notes.size();i++){
+                    listunUD.add(notes.get(i).getUnique_id());
+                    Log.d("Upload UniqueID Notes", notes.get(i).getUnique_id());
+                }
 
                 for (DataSnapshot DS : snapshot.child(UserEmailName).getChildren()) {
                     Notes_FB return_note_FB = DS.getValue(Notes_FB.class);
                     Notes notret = new Notes();
-                    notret.setID(return_note_FB.ID);
-                    notret.setTitle(return_note_FB.title);
-                    notret.setData(return_note_FB.data);
-                    notret.setNotes(return_note_FB.notes);
-                    notret.setUnique_id(return_note_FB.Unique_id);
-                    notret.setPinned(return_note_FB.pinned);
-                    notes.add(notret);
-                    getData();
+                    if (!(listunUD.contains(return_note_FB.Unique_id))) {
+                        notret.setID(return_note_FB.ID);
+                        notret.setTitle(return_note_FB.title);
+                        notret.setData(return_note_FB.data);
+                        notret.setNotes(return_note_FB.notes);
+                        notret.setUnique_id(return_note_FB.Unique_id);
+                        notret.setPinned(return_note_FB.pinned);
+                        notret.setTAG_note(return_note_FB.TAG);
+                        notes.add(notret);
+                        getData();
+                    }
                 }
-                database.mainDAO().inserAll(notes);
                 notesListAdapter.notifyDataSetChanged();
+                Text_update(notes.size());
             }
 
             @Override
@@ -288,7 +318,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
             if (Objects.equals(k_uq, j_uq.intern())){
                 notes.remove(j);
-                database.mainDAO().delete(j);
                 notesListAdapter.notifyDataSetChanged();
                 break;
             }
@@ -303,9 +332,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             if (resultCode == Activity.RESULT_OK) {
                 Notes new_notes = (Notes) data.getSerializableExtra("notes");
                 getData();
-                database.mainDAO().insert(new_notes);
                 notes.clear();
-                notes.addAll(database.mainDAO().getAll());
+                add_Note_from_BD(UserEmailName);
+                Text_update(notes.size());
                 notesListAdapter.notifyDataSetChanged();
                 del_dublicate(notes.size(), notes);
 
@@ -316,9 +345,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             if (resultCode == Activity.RESULT_OK) {
                 Notes new_notes = (Notes) data.getSerializableExtra("notes");
                 getData();
-                database.mainDAO().update(new_notes.getID(), new_notes.getTitle(), new_notes.getNotes(), new_notes.getData());
                 notes.clear();
-                notes.addAll(database.mainDAO().getAll());
+                add_Note_from_BD(UserEmailName);
+                Text_update(notes.size());
                 notesListAdapter.notifyDataSetChanged();
             }
         }
@@ -341,6 +370,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             intent.putExtra("old_notes", notes);
             intent.putExtra("Unique_name_notes", String.valueOf(notes.getUnique_id()));
             intent.putExtra("EmailName", getIntent().getStringExtra("EmailDB"));
+            intent.putExtra("TAG_Note", notes.getTAG_note());
             startActivityForResult(intent, 102);
         }
 
@@ -371,16 +401,15 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         int id = item.getItemId();
 
         mDataBase = FirebaseDatabase.getInstance().getReference("User_Note");
-        if (id == R.id.all_del) {
+        if (id == R.id.del_check) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setTitle("Удалить выделенные заметки?")
                     .setPositiveButton("OK", (dialog, id1) -> {
                         if (notes.size()==1 & notes.get(0).isCheck_state()==true){
                             mDataBase.child(UserEmailName).child(notes.get(0).getUnique_id()).removeValue();
-                            database.mainDAO().delete_all(notes);
                             notes.clear();
-
+                            Text_update(notes.size());
                             notesListAdapter.notifyDataSetChanged();
 
                         }
@@ -388,7 +417,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                             for (int i = 0; i < (notes.size()); i++) {
                                 if (notes.get(i).isCheck_state()) {
                                     mDataBase.child(UserEmailName).child(notes.get(i).getUnique_id()).removeValue();
-                                    database.mainDAO().delete_all(notes);
+
                                     notesListAdapter.notifyDataSetChanged();
                                     add_Note_from_BD(UserEmailName);
 
@@ -408,11 +437,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         }
 
         if (id == R.id.rel_for_db) {
-            database.mainDAO().delete_all(notes);
             notes.clear();
+            Text_update(notes.size());
             notesListAdapter.notifyDataSetChanged();
             max_not_size = (sizeN + Integer.parseInt(max_uniquenote_last_number));
-            Log.d("MainActivity","Global Key_for_update---------> " + max_not_size);
             add_Note_from_BD(UserEmailName);
 
             return true;
@@ -436,10 +464,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         if (item.getItemId() == R.id.Delete) {
             if (!selectednote.isPinned()) {
                 String delete_Unique_id = selectednote.getUnique_id();
-                database.mainDAO().delete(selectednote);
                 notes.remove(selectednote);
                 notesListAdapter.notifyDataSetChanged();
                 mDataBase.child(UserEmailName).child(delete_Unique_id).removeValue();
+                Text_update(notes.size());
             } else {
                 Toast.makeText(MainActivity.this, "Для удаления нужно открепить заметку", Toast.LENGTH_SHORT).show();
             }
@@ -448,12 +476,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         if (item.getItemId() == R.id.pin) {
             String pin_Unique_id = selectednote.getUnique_id();
             if (selectednote.isPinned()) {
-                database.mainDAO().pin(selectednote.getID(), false);
                 notesListAdapter.notifyDataSetChanged();
                 Toast.makeText(MainActivity.this, "Заметка откреплена", Toast.LENGTH_SHORT).show();
                 mDataBase.child(UserEmailName).child(pin_Unique_id).child("pinned").setValue(false);
             } else {
-                database.mainDAO().pin(selectednote.getID(), true);
                 notesListAdapter.notifyDataSetChanged();
                 Toast.makeText(MainActivity.this, "Заметка закреплена", Toast.LENGTH_SHORT).show();
                 mDataBase.child(UserEmailName).child(pin_Unique_id).child("pinned").setValue(true);
@@ -461,7 +487,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
         }
         notes.clear();
-        notes.addAll(database.mainDAO().getAll());
         return false;
     }
 

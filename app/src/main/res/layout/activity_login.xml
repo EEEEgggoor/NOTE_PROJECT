@@ -7,6 +7,17 @@
     android:background="@color/black"
     tools:context=".LoginActivity">
 
+    <Button
+        android:id="@+id/reload_check_inetrnet"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:foreground="@android:drawable/stat_notify_sync"
+        app:layout_constraintBottom_toTopOf="@+id/logIN"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pass" />
+
     <EditText
         android:id="@+id/login"
         android:layout_width="390dp"
@@ -70,5 +81,18 @@
         app:layout_constraintHorizontal_bias="0.666"
         app:layout_constraintStart_toStartOf="parent"
         app:strokeColor="#000000" />
+
+    <TextView
+        android:id="@+id/InternetNot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Отсутвует интернет соединение"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@+id/pass"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

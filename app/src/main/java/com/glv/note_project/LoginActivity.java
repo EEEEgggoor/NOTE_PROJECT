@@ -23,6 +23,8 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginActivity extends AppCompatActivity {
     private EditText login, pass;
     private FirebaseAuth mAuth;
+    private Button logIN, sigIN, reload_check_inetrnet;
+    private TextView InternetNot;
 
 
 
@@ -34,8 +36,19 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         login = findViewById(R.id.login);
         pass = findViewById(R.id.pass);
-
+        logIN = findViewById(R.id.logIN);
+        sigIN = findViewById(R.id.sigIN);
+        reload_check_inetrnet = findViewById(R.id.reload_check_inetrnet);
+        InternetNot = findViewById(R.id.InternetNot);
         mAuth = FirebaseAuth.getInstance();
+
+        reload_check_inetrnet.setOnClickListener(v -> {
+            if (Internet_check.InternetIsConn(this)) {
+                onStart();
+            } else {
+                Toast.makeText(this, "Нет интернет-соединения", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     public void onClickLoginUp(View view){
         if(!TextUtils.isEmpty(login.getText().toString()) && !TextUtils.isEmpty(pass.getText().toString())) {
@@ -79,16 +92,35 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart(){
         super.onStart();
-        FirebaseUser cUser = mAuth.getCurrentUser();
-        if (cUser!=null){
-            Intent i =new Intent(LoginActivity.this, MainActivity.class);
-            i.putExtra("EmailDB", cUser.getEmail());
-            i.putExtra("iduser", cUser.getUid());
-            startActivity(i);
+        if (!Internet_check.InternetIsConn(this))
+        {
+            login.setVisibility(View.INVISIBLE);
+            pass.setVisibility(View.INVISIBLE);
+            logIN.setVisibility(View.INVISIBLE);
+            sigIN.setVisibility(View.INVISIBLE);
+            reload_check_inetrnet.setVisibility(View.VISIBLE);
+            InternetNot.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            FirebaseUser cUser = mAuth.getCurrentUser();
+            if (cUser!=null){
+                Intent i =new Intent(LoginActivity.this, MainActivity.class);
+                i.putExtra("EmailDB", cUser.getEmail());
+                i.putExtra("iduser", cUser.getUid());
+                startActivity(i);
+            }
+            else
+            {
+                login.setVisibility(View.VISIBLE);
+                pass.setVisibility(View.VISIBLE);
+                logIN.setVisibility(View.VISIBLE);
+                sigIN.setVisibility(View.VISIBLE);
+                reload_check_inetrnet.setVisibility(View.INVISIBLE);
+                InternetNot.setVisibility(View.INVISIBLE);
+            }
         }
     }
-
-
 
 
 

@@ -50,7 +50,7 @@ public class NotesListAdapter extends RecyclerView.Adapter <NotesViewHolder>{
         holder.textView_title.setSelected(true);
 
         holder.textView_notes.setText(list.get(position).getNotes());
-
+        holder.TAG_TEXT.setText(list.get(position).getTAG_note());
         holder.textView_date.setText(list.get(position).getData());
         holder.textView_date.setSelected(true);
 
@@ -121,7 +121,7 @@ class NotesViewHolder extends RecyclerView.ViewHolder {
 
 
     CardView notes_container;
-    TextView textView_title, textView_notes, textView_date;
+    TextView textView_title, textView_notes, textView_date, TAG_TEXT;
     ImageView imageView_pin;
     CheckBox check_box;
 
@@ -134,6 +134,7 @@ class NotesViewHolder extends RecyclerView.ViewHolder {
         textView_date = itemView.findViewById(R.id.textView_date);
         imageView_pin = itemView.findViewById(R.id.imageView_pin);
         check_box = itemView.findViewById(R.id.check_Box);
+        TAG_TEXT = itemView.findViewById(R.id.TAG_TEXT);
 
 
 

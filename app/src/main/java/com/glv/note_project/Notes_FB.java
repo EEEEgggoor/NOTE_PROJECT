@@ -3,20 +3,21 @@ package com.glv.note_project;
 
 
 public class Notes_FB {
-    public String title, notes, data,Unique_id;
+    public String title, notes, data,Unique_id, TAG;
     public boolean pinned;
     int ID;
 
     public Notes_FB() {
     }
 
-    public Notes_FB(String title, String notes, String data, boolean pinned, int ID, String Unique_id) {
+    public Notes_FB(String title, String notes, String data, boolean pinned, int ID, String Unique_id, String TAG) {
         this.title = title;
         this.notes = notes;
         this.data = data;
         this.pinned = pinned;
         this.ID = ID;
         this.Unique_id = Unique_id;
+        this.TAG = TAG;
 
     }
 }

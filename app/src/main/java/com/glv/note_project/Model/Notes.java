@@ -35,6 +35,9 @@ public class Notes implements Serializable {
     @ColumnInfo(name = "check_state")
     boolean check_state = false;
 
+    @ColumnInfo(name = "TAG_note")
+    String TAG_note = "";
+
 
     public int getID() {
         return ID;
@@ -98,5 +101,13 @@ public class Notes implements Serializable {
 
     public void setChek(boolean chek) {
         this.chek = chek;
+    }
+
+    public String getTAG_note() {
+        return TAG_note;
+    }
+
+    public void setTAG_note(String TAG_note) {
+        this.TAG_note = TAG_note;
     }
 }

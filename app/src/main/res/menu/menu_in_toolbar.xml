@@ -9,6 +9,6 @@
         android:title = "Выделить всё"
         />
     <item
-        android:id="@+id/all_del"
+        android:id="@+id/del_check"
         android:title="Удалить выбранные" />
 </menu>
