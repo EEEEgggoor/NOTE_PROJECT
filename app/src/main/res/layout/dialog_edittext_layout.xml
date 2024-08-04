@@ -9,5 +9,17 @@
         android:id="@+id/editTeg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter text" />
+        android:hint="Введите тег" />
+
+    <Button
+        android:id="@+id/buttonTAG"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Показать доступные теги" />
+
+    <ListView
+        android:id="@+id/listForTag"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
+
 </LinearLayout>

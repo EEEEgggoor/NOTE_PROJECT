@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         setSupportActionBar(findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         setupDrawer(UserEmailName);
-        add_Note_from_BD(UserEmailName);
+
 
         fab_add.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
 
         });
-        add_Note_from_BD(UserEmailName);
+        syncFromDB(UserEmailName);
 
 
         searchView_home.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -253,31 +253,27 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         return super.onOptionsItemSelected(item);
     }
 
-    private void add_Note_from_BD(String UserEmailName) {
-        ArrayList<String> listunUD = new ArrayList<>();
+    private void syncFromDB(String UserEmailName) {
+
         ValueEventListener vListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                for(int i=0; i<notes.size();i++){
-                    listunUD.add(notes.get(i).getUnique_id());
-                    Log.d("Upload UniqueID Notes", notes.get(i).getUnique_id());
-                }
+                notes.clear();
+                notesListAdapter.notifyDataSetChanged();
 
                 for (DataSnapshot DS : snapshot.child(UserEmailName).getChildren()) {
                     Notes_FB return_note_FB = DS.getValue(Notes_FB.class);
                     Notes notret = new Notes();
-                    if (!(listunUD.contains(return_note_FB.Unique_id))) {
-                        notret.setID(return_note_FB.ID);
-                        notret.setTitle(return_note_FB.title);
-                        notret.setData(return_note_FB.data);
-                        notret.setNotes(return_note_FB.notes);
-                        notret.setUnique_id(return_note_FB.Unique_id);
-                        notret.setPinned(return_note_FB.pinned);
-                        notret.setTAG_note(return_note_FB.TAG);
-                        notes.add(notret);
-                        getData();
-                    }
+                    notret.setID(return_note_FB.ID);
+                    notret.setTitle(return_note_FB.title);
+                    notret.setData(return_note_FB.data);
+                    notret.setNotes(return_note_FB.notes);
+                    notret.setUnique_id(return_note_FB.Unique_id);
+                    notret.setPinned(return_note_FB.pinned);
+                    notret.setTAG_note(return_note_FB.TAG);
+                    notes.add(notret);
+                    getData();
                 }
                 notesListAdapter.notifyDataSetChanged();
                 Text_update(notes.size());
@@ -333,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 Notes new_notes = (Notes) data.getSerializableExtra("notes");
                 getData();
                 notes.clear();
-                add_Note_from_BD(UserEmailName);
+                syncFromDB(UserEmailName);
                 Text_update(notes.size());
                 notesListAdapter.notifyDataSetChanged();
                 del_dublicate(notes.size(), notes);
@@ -346,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 Notes new_notes = (Notes) data.getSerializableExtra("notes");
                 getData();
                 notes.clear();
-                add_Note_from_BD(UserEmailName);
+                syncFromDB(UserEmailName);
                 Text_update(notes.size());
                 notesListAdapter.notifyDataSetChanged();
             }
@@ -419,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                                     mDataBase.child(UserEmailName).child(notes.get(i).getUnique_id()).removeValue();
 
                                     notesListAdapter.notifyDataSetChanged();
-                                    add_Note_from_BD(UserEmailName);
+                                    syncFromDB(UserEmailName);
 
 
                                     Toast.makeText(MainActivity.this, (notes.size()) + "_" + i + "_" + notes.get(i).getTitle(), Toast.LENGTH_SHORT).show();
@@ -441,7 +437,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             Text_update(notes.size());
             notesListAdapter.notifyDataSetChanged();
             max_not_size = (sizeN + Integer.parseInt(max_uniquenote_last_number));
-            add_Note_from_BD(UserEmailName);
+            syncFromDB(UserEmailName);
 
             return true;
         }

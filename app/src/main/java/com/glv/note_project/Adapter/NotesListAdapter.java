@@ -63,6 +63,10 @@ public class NotesListAdapter extends RecyclerView.Adapter <NotesViewHolder>{
         }
 
 
+        if (list.get(position).getTAG_note()==null){
+            holder.TAG_TEXT.setText("Отсутствует");
+        }
+
         if (list.get(position).isChek()) {
             holder.check_box.setVisibility(View.VISIBLE);
             holder.check_box.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
