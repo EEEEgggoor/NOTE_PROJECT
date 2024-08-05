@@ -23,8 +23,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +42,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +50,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
@@ -93,6 +97,37 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         UserEmailName = "" + UserEmailName.split("@")[0];
         max_last_number = -1000;
         max_not_size=0;
+        ListView nav_header_listTAG = findViewById(R.id.nav_header_listTAG);
+
+
+        List<String> nav_listTAG = new ArrayList<>();
+        mDataBase.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                nav_listTAG.clear();
+                for (DataSnapshot ds : snapshot.child(UserEmailName).getChildren()){
+                    Notes_FB notesFb = ds.getValue(Notes_FB.class);
+                    if (notesFb.TAG!="") {
+                        nav_listTAG.add(notesFb.TAG);
+                    }
+                }
+                for (int i=0; i<nav_listTAG.size(); i++){
+                    if (Objects.equals(nav_listTAG.get(i), "")){
+                        nav_listTAG.remove(i);
+                    }
+                }
+                List<String> nav_listTAG_UPDATE = nav_listTAG.stream().distinct().collect(Collectors.toList());
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, nav_listTAG_UPDATE);
+                nav_header_listTAG.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
 
         updateRecycle(notes);
         Text_update(notes.size());
@@ -171,17 +206,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Map<String, Object> rootData = (Map<String, Object>) dataSnapshot.child(UserEmailName).getValue();
                 if (rootData != null) {
-
                     HashMap<String, Object> rootDataMap = new HashMap<>(rootData);
-
                     for (String key : rootDataMap.keySet()) {
-
                         Pattern del_email = Pattern.compile(UserEmailName);
                         Matcher matcher = del_email.matcher(key);
-
                         int m = Integer.parseInt("" + matcher.replaceAll(""));
                         max_last_number = Math.max(max_last_number, m);
-
                     }
                     max_uniquenote_last_number = "" + (max_last_number+1);
                     future.complete(max_uniquenote_last_number);
@@ -189,10 +219,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 } else {
                     future.complete("-0");
                 }
-
-
             }
-
             public void onCancelled(DatabaseError databaseError) {
                 // Обработка ошибок
                 System.err.println("Error: " + databaseError.getMessage());
@@ -203,42 +230,23 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
 
-    private void setupDrawer(String userEmailName) {
+    private void setupDrawer(String UserEmailName) {
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        View nav_header = navigationView.getHeaderView(0);
-
-        TextView textViewUsername = nav_header.findViewById(R.id.nav_header_title);
-        textViewUsername.setText(userEmailName);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         toggle.setToolbarNavigationClickListener(v -> {
             if (drawerLayout.isDrawerVisible(GravityCompat.START)) {
+
                 drawerLayout.closeDrawer(GravityCompat.START);
             } else {
+
                 drawerLayout.openDrawer(GravityCompat.START);
             }
-        });
-
-        navigationView.setNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.home_n) {
-                Toast.makeText(this, "Home selected", Toast.LENGTH_SHORT).show();
-            }
-            if (item.getItemId() == R.id.nav_settings) {
-                Toast.makeText(this, "Settings selected", Toast.LENGTH_SHORT).show();
-            }
-            if (item.getItemId() == R.id.nav_about) {
-                Intent i = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(i);
-                FirebaseAuth.getInstance().signOut();
-            }
-
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
         });
     }
 

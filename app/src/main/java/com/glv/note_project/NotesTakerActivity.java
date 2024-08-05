@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -99,6 +100,11 @@ public class NotesTakerActivity extends AppCompatActivity {
                 for (DataSnapshot ds : snapshot.child(User_Note_key123).getChildren()){
                     Notes_FB notesFb = ds.getValue(Notes_FB.class);
                     TAGList.add(notesFb.TAG);
+                }
+                for (int i=0; i<TAGList.size(); i++){
+                    if (Objects.equals(TAGList.get(i), "")){
+                        TAGList.remove(i);
+                    }
                 }
                 List<String> TAGListUpdate = TAGList.stream().distinct()
                         .collect(Collectors.toList());
@@ -193,7 +199,6 @@ public class NotesTakerActivity extends AppCompatActivity {
                                 .setView(dialogView)
                                 .setPositiveButton("OK", (dialog, id1) -> {
                                     teg_text = edittext_teg.getText().toString();
-                                    if (teg_text==""){teg_text=null;}
                                     textTegTOOLBAR.setText(teg_text);
                                 })
                                 .setNegativeButton("Отмена", (dialog, id12) -> {

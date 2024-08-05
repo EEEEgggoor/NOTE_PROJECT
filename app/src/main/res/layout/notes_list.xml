@@ -25,15 +25,6 @@
             android:background="@color/color1">
 
             <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="end"
-                android:padding="6dp"
-                android:text="ТЕГ:"
-                android:textColor="@color/color5" />
-
-            <TextView
                 android:id="@+id/TAG_TEXT"
                 android:layout_width="353dp"
                 android:layout_height="match_parent"

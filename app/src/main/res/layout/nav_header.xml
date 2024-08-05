@@ -8,17 +8,13 @@
     android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <TextView
-        android:id="@+id/nav_header_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Header Title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
     <TextView
-        android:id="@+id/nav_header_subtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Header Subtitle"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+        android:id="@+id/nav_header_title"
+        android:layout_width="208dp"
+        android:layout_height="58dp"
+        android:text="Список тегов:"
+        android:textSize="30dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
 </LinearLayout>
